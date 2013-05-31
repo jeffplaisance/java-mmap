@@ -1,73 +1,76 @@
 package com.jeffplaisance.mmap;
 
 public class ReverseEndianHeapDataAccess implements HeapDataAccess {
+
+    private static final NativeEndianHeapDataAccess delegate = new NativeEndianHeapDataAccess();
+
     @Override
     public byte getByte(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return delegate.getByte(data, offset);
     }
 
     @Override
     public short getShort(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Short.reverseBytes(delegate.getShort(data, offset));
     }
 
     @Override
     public int getInt(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Integer.reverseBytes(delegate.getInt(data, offset));
     }
 
     @Override
     public long getLong(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Long.reverseBytes(delegate.getLong(data, offset));
     }
 
     @Override
     public char getChar(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Character.reverseBytes(delegate.getChar(data, offset));
     }
 
     @Override
     public float getFloat(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Float.intBitsToFloat(Integer.reverseBytes(delegate.getInt(data, offset)));
     }
 
     @Override
     public double getDouble(long[] data, long offset) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return Double.longBitsToDouble(Long.reverseBytes(delegate.getLong(data, offset)));
     }
 
     @Override
     public void putByte(long[] data, long offset, byte v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putByte(data, offset, v);
     }
 
     @Override
     public void putShort(long[] data, long offset, short v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putShort(data, offset, Short.reverseBytes(v));
     }
 
     @Override
     public void putInt(long[] data, long offset, int v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putInt(data, offset, Integer.reverseBytes(v));
     }
 
     @Override
     public void putLong(long[] data, long offset, long v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putLong(data, offset, Long.reverseBytes(v));
     }
 
     @Override
     public void putChar(long[] data, long offset, char v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putChar(data, offset, Character.reverseBytes(v));
     }
 
     @Override
     public void putFloat(long[] data, long offset, float v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putInt(data, offset, Integer.reverseBytes(Float.floatToRawIntBits(v)));
     }
 
     @Override
     public void putDouble(long[] data, long offset, double v) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        delegate.putLong(data, offset, Long.reverseBytes(Double.doubleToRawLongBits(v)));
     }
 }
