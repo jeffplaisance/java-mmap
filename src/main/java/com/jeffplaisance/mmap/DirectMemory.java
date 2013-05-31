@@ -2,27 +2,13 @@ package com.jeffplaisance.mmap;
 
 import sun.misc.Unsafe;
 
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public final class DirectMemory implements Memory {
 
-    private static final Unsafe UNSAFE;
-    private static final int BYTE_ARRAY_BASE_OFFSET;
-
-    static {
-        try {
-            final Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            UNSAFE = (Unsafe) theUnsafe.get(null);
-            BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private static final Unsafe UNSAFE = NativeMMapUtils.getUnsafe();
+    public static final int BYTE_ARRAY_BASE_OFFSET = NativeMMapUtils.BYTE_ARRAY_BASE_OFFSET;
 
     private final long address;
     private final long length;
@@ -251,8 +237,13 @@ public final class DirectMemory implements Memory {
                 return;
             }
         }
-        for (long l = offset; dest.hasRemaining(); l++) {
-            dest.put(access.getByte(address+l));
+        if (dest.hasArray()) {
+            UNSAFE.copyMemory(null, address+offset, dest.array(), BYTE_ARRAY_BASE_OFFSET+dest.arrayOffset()+dest.position(), dest.remaining());
+            dest.position(dest.limit());
+        } else {
+            for (long l = offset; dest.hasRemaining(); l++) {
+                dest.put(access.getByte(address+l));
+            }
         }
     }
 
@@ -267,8 +258,13 @@ public final class DirectMemory implements Memory {
                 return;
             }
         }
-        for (long l = offset; src.hasRemaining(); l++) {
-            access.putByte(address+l, src.get());
+        if (src.hasArray()) {
+            UNSAFE.copyMemory(src.array(), BYTE_ARRAY_BASE_OFFSET+src.arrayOffset()+src.position(), null, address+offset, src.remaining());
+            src.position(src.limit());
+        } else {
+            for (long l = offset; src.hasRemaining(); l++) {
+                access.putByte(address+l, src.get());
+            }
         }
     }
 

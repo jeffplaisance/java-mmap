@@ -1,6 +1,9 @@
 package com.jeffplaisance.mmap;
 
+import sun.misc.Unsafe;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 public class NativeMMapUtils {
@@ -17,6 +20,24 @@ public class NativeMMapUtils {
     private static final int EPERM = 8;
     private static final int ETXTBSY = 9;
     private static final int EOVERFLOW = 10;
+
+    private static final Unsafe UNSAFE;
+    public static final int BYTE_ARRAY_BASE_OFFSET;
+    public static final int LONG_ARRAY_BASE_OFFSET;
+
+    static {
+        try {
+            final Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+            theUnsafe.setAccessible(true);
+            UNSAFE = (Unsafe) theUnsafe.get(null);
+            BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
+            LONG_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(long[].class);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static native long mmap0(long addr, long length, int prot, int flags, int fd, long offset);
 
@@ -39,5 +60,9 @@ public class NativeMMapUtils {
         if (ret != 0) {
             throw new IOException("munmap failed with error "+errno());
         }
+    }
+
+    static Unsafe getUnsafe() {
+        return UNSAFE;
     }
 }
