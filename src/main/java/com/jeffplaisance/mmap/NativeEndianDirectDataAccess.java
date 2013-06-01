@@ -4,7 +4,7 @@ import sun.misc.Unsafe;
 
 public class NativeEndianDirectDataAccess implements DirectDataAccess {
 
-    private static final Unsafe UNSAFE = NativeMMapUtils.getUnsafe();
+    private static final Unsafe UNSAFE = NativeUtils.getUnsafe();
 
     @Override
     public byte getByte(long offset) {

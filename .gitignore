@@ -1,7 +1,7 @@
 target
 *.iml
 *.class
-*.o
+**/*.o
 
 # Package Files #
 *.jar

@@ -7,9 +7,9 @@ import java.nio.ByteOrder;
 
 public final class HeapMemory implements Memory {
 
-    private static final Unsafe UNSAFE = NativeMMapUtils.getUnsafe();
-    public static final int LONG_ARRAY_BASE_OFFSET = NativeMMapUtils.LONG_ARRAY_BASE_OFFSET;
-    public static final int BYTE_ARRAY_BASE_OFFSET = NativeMMapUtils.BYTE_ARRAY_BASE_OFFSET;
+    private static final Unsafe UNSAFE = NativeUtils.getUnsafe();
+    public static final int LONG_ARRAY_BASE_OFFSET = NativeUtils.LONG_ARRAY_BASE_OFFSET;
+    public static final int BYTE_ARRAY_BASE_OFFSET = NativeUtils.BYTE_ARRAY_BASE_OFFSET;
 
     private final long[] data;
     private final long base;
@@ -239,7 +239,7 @@ public final class HeapMemory implements Memory {
     public void getBytes(long offset, ByteBuffer dest) {
         checkBounds(offset, dest.remaining());
         if (dest.isDirect()) {
-            final long destAddress = NativeMMapUtils.getDirectBufferAddress(dest);
+            final long destAddress = NativeUtils.getDirectBufferAddress(dest);
             if (destAddress != 0) {
                 UNSAFE.copyMemory(data, LONG_ARRAY_BASE_OFFSET+base+offset, null, destAddress+dest.position(), dest.remaining());
                 dest.position(dest.limit());
@@ -260,7 +260,7 @@ public final class HeapMemory implements Memory {
     public void putBytes(long offset, ByteBuffer src) {
         checkBounds(offset, src.remaining());
         if (src.isDirect()) {
-            final long srcAddress = NativeMMapUtils.getDirectBufferAddress(src);
+            final long srcAddress = NativeUtils.getDirectBufferAddress(src);
             if (srcAddress != 0) {
                 UNSAFE.copyMemory(null, srcAddress+src.position(), data, LONG_ARRAY_BASE_OFFSET+base+offset, src.remaining());
                 src.position(src.limit());

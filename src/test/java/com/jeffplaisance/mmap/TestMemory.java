@@ -14,7 +14,7 @@ public class TestMemory extends TestCase {
         for (int i = 0; i < data.length; i++) {
             assertEquals(data[i], i);
         }
-        DirectMemory direct = new DirectMemory(NativeMMapUtils.getUnsafe().allocateMemory(64), 64, ByteOrder.nativeOrder());
+        DirectMemory direct = new DirectMemory(NativeUtils.getUnsafe().allocateMemory(64), 64, ByteOrder.nativeOrder());
         direct.putBytes(0, heap);
         for (int i = 0; i < data.length; i++) {
             assertEquals(data[i], direct.getLong(i*8));

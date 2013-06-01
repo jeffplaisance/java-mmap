@@ -4,8 +4,8 @@ import sun.misc.Unsafe;
 
 public class NativeEndianHeapDataAccess implements HeapDataAccess {
 
-    private static final Unsafe UNSAFE = NativeMMapUtils.getUnsafe();
-    public static final int LONG_ARRAY_BASE_OFFSET = NativeMMapUtils.LONG_ARRAY_BASE_OFFSET;
+    private static final Unsafe UNSAFE = NativeUtils.getUnsafe();
+    public static final int LONG_ARRAY_BASE_OFFSET = NativeUtils.LONG_ARRAY_BASE_OFFSET;
 
     @Override
     public byte getByte(long[] data, long offset) {
