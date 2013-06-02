@@ -1,7 +1,9 @@
 target
 *.iml
 *.class
-**/*.o
+src/main/native/*.o
+src/main/native/*.so
+src/main/native/*.dylib
 
 # Package Files #
 *.jar

@@ -8,14 +8,21 @@ public class MMapBuffer implements BufferResource {
 
     private final DirectMemory memory;
 
-    public MMapBuffer(File file, long offset, long length, boolean shared, boolean readOnly) throws IOException {
+    public MMapBuffer(File file, long offset, long length, boolean shared, boolean readOnly, ByteOrder endianness) throws IOException {
         final int fd = NativeUtils.open(file.getPath(), readOnly);
         try {
             if (file.length() < offset+length) {
                 NativeUtils.ftruncate(fd, offset+length);
             }
-            final long address = NativeUtils.mmap(0, length, readOnly ? NativeUtils.PROT_READ : NativeUtils.PROT_READ | NativeUtils.PROT_WRITE, shared ? NativeUtils.MAP_SHARED : NativeUtils.MAP_PRIVATE, 1, offset);
-            memory = new DirectMemory(address, length, ByteOrder.nativeOrder());
+            final long address = NativeUtils.mmap(
+                    0,
+                    length,
+                    readOnly ? NativeUtils.PROT_READ : NativeUtils.PROT_READ | NativeUtils.PROT_WRITE,
+                    shared ? NativeUtils.MAP_SHARED : NativeUtils.MAP_PRIVATE,
+                    fd,
+                    offset
+            );
+            memory = new DirectMemory(address, length, endianness);
         } finally {
             NativeUtils.close(fd);
         }

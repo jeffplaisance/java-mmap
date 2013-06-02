@@ -2,12 +2,49 @@ package com.jeffplaisance.mmap;
 
 import sun.misc.Unsafe;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 public class NativeUtils {
+
+    static {
+        final String os = System.getProperty("os.name");
+        final String arch = System.getProperty("os.arch");
+        final String libName;
+        final String extension;
+        if (os.equals("Mac OS X")) {
+            libName = "libjavammap";
+            extension = "dylib";
+        } else {
+            throw new UnsupportedOperationException("combination of os: "+os+" and arch: "+arch+" is not supported");
+        }
+        final String path = "/nativelib/" + os.replaceAll("\\s", "_") + "-" + arch + "/" + libName + "." + extension;
+        final InputStream in = NativeUtils.class.getResourceAsStream(path);
+        if (in == null) {
+            throw new UnsupportedOperationException(path+" does not exist in classpath");
+        }
+        try {
+            final File tmp = File.createTempFile("libjavammap", "."+extension);
+            final FileOutputStream out = new FileOutputStream(tmp);
+            final byte[] bytes = new byte[4096];
+            while (true) {
+                final int read = in.read(bytes);
+                if (read < 0) break;
+                out.write(bytes, 0, read);
+            }
+            in.close();
+            out.close();
+            System.load(tmp.getPath());
+            tmp.delete();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static final long MAP_FAILED = -1;
 
