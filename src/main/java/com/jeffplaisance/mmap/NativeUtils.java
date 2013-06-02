@@ -139,7 +139,7 @@ public class NativeUtils {
     }
 
     static int open(String path, boolean readOnly) throws IOException {
-        final int fd = open(path, readOnly ? O_RDONLY : (O_RDWR | O_CREAT), (7<<6)|(5<<3)|5);
+        final int fd = open(path, readOnly ? O_RDONLY : (O_RDWR | O_CREAT), (6<<6)|(4<<3)|4);
         if (fd < 0) {
             throw new FileNotFoundException("open failed with error "+errno());
         }
