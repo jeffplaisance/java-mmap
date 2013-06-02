@@ -11,7 +11,7 @@ public class HeapBuffer implements BufferResource {
     }
 
     @Override
-    public Memory memory() {
+    public HeapMemory memory() {
         return memory;
     }
 

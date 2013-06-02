@@ -29,7 +29,7 @@ public class MMapBuffer implements BufferResource {
     }
 
     @Override
-    public Memory memory() {
+    public DirectMemory memory() {
         return memory;
     }
 
